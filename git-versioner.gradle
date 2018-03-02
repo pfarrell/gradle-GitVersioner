@@ -87,9 +87,11 @@ def GitVersion generateVersionName() {
     if (stableBranches.contains(currentBranch)) {
         defaultBranch = currentBranch
     }
-
+    println("currentBranch: $currentBranch")
     stableBranches.each {
+      println("testing $it against $currentBranch")
       if(currentBranch.matches(it)) {
+        println("$it matches $currentBranch")
         defaultBranch = currentBranch
       }
     }
