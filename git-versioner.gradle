@@ -52,7 +52,6 @@ public class GitVersion {
 }
 
 def GitVersion generateVersionName() {
-
     // check if git project
     def status = 'git status'.execute([], rootDir)
     status.waitFor()
@@ -88,6 +87,13 @@ def GitVersion generateVersionName() {
     if (stableBranches.contains(currentBranch)) {
         defaultBranch = currentBranch
     }
+
+    stableBranches.each {
+      if(currentBranch.matches(it)) {
+        defaultBranch = currentBranch
+      }
+    }
+
     def currentCommit = 'git rev-parse HEAD'.execute([], rootDir).text.trim()
 
     def log = "git log --pretty=format:'%at' --reverse".execute([], rootDir)
