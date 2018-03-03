@@ -81,17 +81,19 @@ def GitVersion generateVersionName() {
     def shortNameClosure = configuration.get("shortName")
 
     // get information from git
-    def currentBranch = 'git symbolic-ref --short -q HEAD'.execute([], rootDir).text.trim()
+    def revParse = 'git rev-parse HEAD'.execute().text.trim()
+    println(revParse)
+    def p = "git ls-remote --heads origin".execute() | "grep $revParse".execute() | "cut -f 2".execute() | ['sed', '-e', 's:refs/heads/::'].execute()
+    p.waitFor()
+    def currentBranch = p.text.trim()
 
     // use a defined stable branch when on such a branch
     if (stableBranches.contains(currentBranch)) {
         defaultBranch = currentBranch
     }
-    println("currentBranch: $currentBranch")
+
     stableBranches.each {
-      println("testing $it against $currentBranch")
       if(currentBranch.matches(it)) {
-        println("$it matches $currentBranch")
         defaultBranch = currentBranch
       }
     }
